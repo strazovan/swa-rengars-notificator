@@ -23,6 +23,10 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     private int mongoPort;
     @Value("${configuration.mongo.database}")
     private String mongoDatabase;
+    @Value("${configuration.mongo.username}")
+    private String mongoUsername;
+    @Value("${configuration.mongo.password}")
+    private String mongoPassword;
 
     @Override
     protected String getDatabaseName() {
@@ -31,7 +35,9 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     public MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://" + this.mongoHost + ":" + this.mongoPort + "/" + this.mongoDatabase);
+        final var credentials = !this.mongoUsername.isEmpty() ? (this.mongoUsername + ":" + this.mongoPassword + "@") : "";
+        ConnectionString connectionString = new ConnectionString("mongodb://" + credentials +
+                this.mongoHost + ":" + this.mongoPort + "/" + this.mongoDatabase + "?authSource=admin");
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();

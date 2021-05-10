@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  app:
+    container_name: swa_notifications
+    build:
+      context: .
+      dockerfile: "Dockerfile"
+    networks:
+      - network
+    env_file:
+      - .env
+    ports:
+      - 18080:8080
+    depends_on:
+      - mongodb
+    restart: on-failure
+
+  mongodb:
+    image: mongo:4.0.8
+    container_name: mongodb
+    restart: unless-stopped
+    command: mongod --auth
+    expose:
+      - ${MONGO_PORT}
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - "./mongo-init/:/docker-entrypoint-initdb.d/"
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+
