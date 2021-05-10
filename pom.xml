@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>cz.cvut.fel.swa.rengars</groupId>
 	<artifactId>notifications</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>notifications</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Rengars notification service</description>
 	<properties>
 		<java.version>16</java.version>
 		<swagger-annotations-version>1.5.22</swagger-annotations-version>
