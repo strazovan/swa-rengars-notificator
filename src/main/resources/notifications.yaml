@@ -1,0 +1,202 @@
+openapi: "3.0.0"
+info:
+  title: Rengars notification service
+  version: 0.0.1
+paths:
+  /v1/notifications:
+    get:
+      tags: ["Notifications"]
+      operationId: getNotifications
+      summary: Gets all notifications. By default filters the list to cointain only queued notifications.
+      description: Response doesn't contain the parameters.
+      parameters:
+        - $ref: "#/components/parameters/state"
+      responses:
+        "200":
+          description: "Notification entries list"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationQueueEntry"
+        "500":
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags: ["Notifications"]
+      operationId: createNotification
+      summary: Creates new notification entry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPostEntry"
+      responses:
+        "200":
+          description: |-
+            Notification sucessfuly created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationQueueEntry"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v1/notifications/{id}:
+    get:
+      tags: ["Notifications"]
+      operationId: getNotification
+      summary: Gets a notification by its id
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Notification entry with given id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationQueueEntry"
+        "404":
+          description: Not found
+        "500":
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags: ["Notifications"]
+      operationId: cancelNotification
+      summary: Cancels notification with given id
+      description: Operation is delete because it "deletes" the entry from the queue. The entry is still persisted and retrievable.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Cancelled notification entry.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationQueueEntry"
+        "400":
+          description: Bad request. Returned if the notification was already sent.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+        "500":
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      description: "Id of the notification"
+      schema:
+        type: string
+      example: "AAAA-BBBB-1233-CDEFG"
+    state:
+      name: state
+      in: query
+      required: false
+      description: "Notification state"
+      schema:
+        $ref: "#/components/schemas/NotificationStatus"
+  schemas:
+    NotificationPostEntry:
+      title: NotificationPostEntry
+      type: object
+      required:
+        - "type"
+      properties:
+        type:
+          # todo pozdeji tu bude asi enumerace, ale zatim nevim typy
+          type: string
+          description: Type of the notification. Message template and configuration for sending the message is determined by this.
+          example: "OFFER_CREATED"
+        parameters:
+          $ref: "#/components/schemas/NotificationParameteres"
+        sendAt:
+          type: string
+          description: An UTC datetime when the message should be send. Be aware that the notification won't be necessarily send at the specified time.
+          example: "2020-04-18T22:00:00Z"
+
+    NotificationQueueEntry:
+      title: NotificationQueueEntry
+      type: object
+      required:
+        - "id"
+        - "status"
+        - "scheduledAt"
+      properties:
+        id:
+          type: string
+          description: An ID of the created notification. Can be used in other calls.
+          example: AAAA-BBBB-1233-CDEFG
+        status:
+          $ref: "#/components/schemas/NotificationStatus"
+        parameters:
+          $ref: "#/components/schemas/NotificationParameteres"
+        scheduledAt:
+          type: string
+          description: An UTC datetime at which the notification will be send. Be aware that the notification won't be necessarily send exactly at this time.
+          example: "2020-04-18T22:00:00Z"
+        sentAt:
+          type: string
+          description: An UTC datetime when the notification was sent. Present only for notifications in SENT state.
+          example: "2020-04-18T22:00:00Z"
+
+    NotificationParameteres:
+      type: object
+      description: Object containing parameters for the message template
+      example:
+        {
+          "offerName": "SUPER FIRE OFFER BE A MILLIONARE IN A MONTH",
+          "company": "SILLICON VALLEY CRYPTO BARONS",
+        }
+    NotificationStatus:
+      type: string
+      description: State of the notification
+      enum:
+        - QUEUED
+        - CANCELLED
+        - SENT
+        - FAILED
+    Error:
+      type: object
+      description: Describes error, its identifier and additional info.
+      required:
+        - "type"
+      properties:
+        type:
+          type: string
+          description: Unique id of the error
+          example: errors.notifications.alreadySent
+        message:
+          type: string
+          description: Error message
+          example: Sent notification can not be cancelled.
+        details:
+          type: object
+          description: Provides additional metadata about the error.
