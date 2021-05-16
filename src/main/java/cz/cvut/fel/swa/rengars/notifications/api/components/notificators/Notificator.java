@@ -10,12 +10,12 @@ public interface Notificator {
 
     String getName();
 
-    default String getTextRepresentation(String template, Map<String, String> parameters) {
+    default String getTextRepresentation(String template, Map<String, Object> parameters) {
         // TODO make better rendering, but for concept this is good enough
         if (template == null) return ""; // let's just return an empty string and avoid NPE
         var representation = template;
-        for (Map.Entry<String, String> kv : parameters.entrySet()) {
-            representation = representation.replace("${" + kv.getKey() + "}", kv.getValue());
+        for (Map.Entry<String, Object> kv : parameters.entrySet()) {
+            representation = representation.replace("${" + kv.getKey() + "}", kv.getValue().toString());
         }
         return representation;
     }

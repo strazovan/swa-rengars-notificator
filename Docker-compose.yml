@@ -14,6 +14,7 @@ services:
       - 18080:8080
     depends_on:
       - mongodb
+      - rabbit-mq
     restart: on-failure
 
   mongodb:
@@ -35,6 +36,17 @@ services:
       - "./mongo-init/:/docker-entrypoint-initdb.d/"
     networks:
       - network
+
+  rabbit-mq:
+    image: rabbitmq:3-management
+    container_name: swa_rabbit_mq
+    networks:
+      - network
+    expose:
+      - 5672
+    ports:
+      - 15672:15672
+    restart: on-failure
 
 networks:
   network:

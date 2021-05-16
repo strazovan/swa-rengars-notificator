@@ -8,7 +8,7 @@ import java.util.Map;
 public class NotificationEntry {
     private String id;
     private String type;
-    private Map<String, String> parameters;
+    private Map<String, Object> parameters;
     private Date sentAt;
     private NotificationStatus status;
     private Date scheduledAt;
@@ -29,11 +29,11 @@ public class NotificationEntry {
         this.type = type;
     }
 
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 

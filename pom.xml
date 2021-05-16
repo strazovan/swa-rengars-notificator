@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>cz.cvut.fel.swa.rengars</groupId>
 	<artifactId>notifications</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>notifications</name>
 	<description>Rengars notification service</description>
 	<properties>
@@ -129,6 +129,11 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${ch.qos.logback.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 	</dependencies>
 
