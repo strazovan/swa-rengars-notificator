@@ -173,7 +173,7 @@ components:
     Subscription:
       title: Subscription
       type: object
-      required: [ type, notificator ]
+      required: [ type, notificator, receiver ]
       properties:
         id:
           type: string
@@ -205,12 +205,15 @@ components:
       type: object
       required:
         - "type"
+        - "objectId"
       properties:
         type:
           # todo pozdeji tu bude asi enumerace, ale zatim nevim typy
           type: string
           description: Type of the notification. Message template and configuration for sending the message is determined by this.
           example: "OFFER_CREATED"
+        objectId:
+          type: number
         parameters:
           $ref: "#/components/schemas/NotificationParameters"
         sendAt:

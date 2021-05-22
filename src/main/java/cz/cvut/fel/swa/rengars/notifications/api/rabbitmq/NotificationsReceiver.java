@@ -34,6 +34,7 @@ public class NotificationsReceiver {
     private NotificationEntry entryFromDto(NotificationEvent event) {
         final var entry = new NotificationEntry();
         entry.setType(event.getEventType());
+        entry.setObjectId(event.getId());
         entry.setScheduledAt(new Date());
         entry.setParameters(event.getPayload());
         return entry;

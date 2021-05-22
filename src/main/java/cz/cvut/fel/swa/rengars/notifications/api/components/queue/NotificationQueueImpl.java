@@ -5,7 +5,9 @@ import cz.cvut.fel.swa.rengars.notifications.api.components.queue.model.Notifica
 import cz.cvut.fel.swa.rengars.notifications.api.components.queue.service.NotificationService;
 import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationStatus;
 import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationsConfiguration;
+import cz.cvut.fel.swa.rengars.notifications.api.model.SubscriptionDocument;
 import cz.cvut.fel.swa.rengars.notifications.dao.ConfigurationDao;
+import cz.cvut.fel.swa.rengars.notifications.dao.SubscriptionsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class NotificationQueueImpl implements NotificationQueue, SmartLifecycle, Runnable, ApplicationContextAware {
@@ -25,14 +29,16 @@ public class NotificationQueueImpl implements NotificationQueue, SmartLifecycle,
     private final BlockingQueue<NotificationEntry> messages;
     private final ExecutorService scheduler;
     private final NotificationService service;
-    private Map<String, Notificator> notificators = new HashMap<>();
+    private final Map<String, Notificator> notificators = new HashMap<>();
     private ApplicationContext context;
     private volatile boolean running = false;
     private final ConfigurationDao configurationDao;
+    private final SubscriptionsDao subscriptionsDao;
 
-    public NotificationQueueImpl(NotificationService service, ConfigurationDao configurationDao) {
+    public NotificationQueueImpl(NotificationService service, ConfigurationDao configurationDao, SubscriptionsDao subscriptionsDao) {
         this.service = service;
         this.configurationDao = configurationDao;
+        this.subscriptionsDao = subscriptionsDao;
         this.messages = new PriorityBlockingQueue<>(11, Comparator.comparing(NotificationEntry::getScheduledAt));
         this.scheduler = Executors.newSingleThreadExecutor();
     }
@@ -80,8 +86,9 @@ public class NotificationQueueImpl implements NotificationQueue, SmartLifecycle,
                     continue;
                 }
                 try {
-                    final List<NotificationsConfiguration> config = this.configurationDao.findByType(notification.getType());
-                    config.forEach(configuration -> this.notificators.get(configuration.getNotificatorName()).processEntry(configuration, notification));
+                    final Map<String, NotificationsConfiguration> config = this.configurationDao.findAll().stream().collect(Collectors.toMap(NotificationsConfiguration::getNotificatorName, Function.identity()));
+                    final List<SubscriptionDocument> subscriptions = this.subscriptionsDao.findForTypeAndObject(entry.getType(), entry.getObjectId());
+                    subscriptions.forEach(subscription -> this.notificators.get(subscription.getNotificator()).processEntry(subscription.getReceiver(), config.get(subscription.getNotificator()), notification));
                     notification.setStatus(NotificationStatus.SENT);
                     notification.setSentAt(new Date());
                 } catch (Exception ex) {

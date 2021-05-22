@@ -8,6 +8,7 @@ import java.util.Map;
 public class NotificationEntry {
     private String id;
     private String type;
+    private Long objectId;
     private Map<String, Object> parameters;
     private Date sentAt;
     private NotificationStatus status;
@@ -27,6 +28,14 @@ public class NotificationEntry {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Long getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(Long objectId) {
+        this.objectId = objectId;
     }
 
     public Map<String, Object> getParameters() {

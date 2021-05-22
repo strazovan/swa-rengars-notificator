@@ -6,7 +6,7 @@ import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationsConfiguratio
 import java.util.Map;
 
 public interface Notificator {
-    void processEntry(NotificationsConfiguration configuration, NotificationEntry entry);
+    void processEntry(String receiver, NotificationsConfiguration configuration, NotificationEntry entry);
 
     String getName();
 

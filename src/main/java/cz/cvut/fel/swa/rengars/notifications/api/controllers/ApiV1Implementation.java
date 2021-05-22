@@ -84,6 +84,7 @@ public class ApiV1Implementation implements V1ApiDelegate {
     private NotificationEntry dtoToEntry(NotificationPostEntry dto) {
         final var entry = new NotificationEntry();
         entry.setType(dto.getType());
+        entry.setObjectId(dto.getObjectId().longValue());
         entry.setParameters((Map<String, Object>) dto.getParameters()); // todo
         entry.setScheduledAt(dto.getSendAt() != null ? new Date(dto.getSendAt().toInstant().toEpochMilli()) : new Date());
         return entry;

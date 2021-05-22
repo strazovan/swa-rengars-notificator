@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class ConsoleNotificator implements Notificator {
 
     @Override
-    public void processEntry(NotificationsConfiguration configuration, NotificationEntry entry) {
+    public void processEntry(String receiver, NotificationsConfiguration configuration, NotificationEntry entry) {
         System.out.println("[" + entry.getId() + "]" + configuration.getNotificatorParameters().get("prefix") + " "
                 + this.getTextRepresentation(configuration.getTemplate(), entry.getParameters()));
     }

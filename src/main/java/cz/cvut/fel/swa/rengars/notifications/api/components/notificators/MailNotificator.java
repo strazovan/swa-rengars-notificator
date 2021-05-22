@@ -19,10 +19,10 @@ public class MailNotificator implements Notificator {
 
 
     @Override
-    public void processEntry(NotificationsConfiguration configuration, NotificationEntry entry) {
+    public void processEntry(String receiver, NotificationsConfiguration configuration, NotificationEntry entry) {
         final var message = new SimpleMailMessage();
         message.setFrom(configuration.getNotificatorParameters().get("from"));
-        message.setTo(entry.getParameters().get("to").toString());
+        message.setTo(receiver);
         message.setSubject(configuration.getNotificatorParameters().get("subject"));
         message.setText(this.getTextRepresentation(configuration.getTemplate(), entry.getParameters()));
         emailSender.send(message);
