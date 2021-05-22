@@ -2,29 +2,32 @@ package cz.cvut.fel.swa.rengars.notifications.api.controllers;
 
 import cz.cvut.fel.swa.rengars.notifications.api.components.queue.NotificationQueue;
 import cz.cvut.fel.swa.rengars.notifications.api.components.queue.model.NotificationEntry;
+import cz.cvut.fel.swa.rengars.notifications.api.model.*;
 import cz.cvut.fel.swa.rengars.notifications.api.model.Error;
-import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationPostEntry;
-import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationQueueEntry;
-import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationStatus;
+import cz.cvut.fel.swa.rengars.notifications.dao.SubscriptionsDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class ApiV1Implementation implements V1ApiDelegate {
 
     private final NotificationQueue queue;
+    private final SubscriptionsDao subscriptionsDao; // todo should be service, but aint no time for that
 
     @Autowired
-    public ApiV1Implementation(NotificationQueue queue) {
+    public ApiV1Implementation(NotificationQueue queue, SubscriptionsDao subscriptionsDao) {
         this.queue = queue;
+        this.subscriptionsDao = subscriptionsDao;
     }
 
     @Override
@@ -66,6 +69,40 @@ public class ApiV1Implementation implements V1ApiDelegate {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(entryList);
+    }
+
+    @Override
+    public ResponseEntity<Subscription> subscribe(Subscription subscription) {
+        final SubscriptionDocument subscriptionDocument = this.subscriptionToSubscriptionDocument(subscription);
+        final SubscriptionDocument createdSubscription = this.subscriptionsDao.create(subscriptionDocument);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.subscriptionDocumentToSubscription(createdSubscription));
+    }
+
+    @Override
+    public ResponseEntity<Subscription> unsubscribe(String id) {
+        final Optional<SubscriptionDocument> subscription = this.subscriptionsDao.delete(id);
+        if (subscription.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(this.subscriptionDocumentToSubscription(subscription.get()));
+    }
+
+    private SubscriptionDocument subscriptionToSubscriptionDocument(Subscription subscription) {
+        final var document = new SubscriptionDocument();
+        document.setNotificator(subscription.getNotificator().getValue());
+        document.setType(subscription.getType());
+        document.setReceiver(subscription.getReceiver());
+        document.setObjectId(subscription.getObjectId().longValue());
+        return document;
+    }
+
+    private Subscription subscriptionDocumentToSubscription(SubscriptionDocument document) {
+        final var subscription = new Subscription();
+        subscription.setId(document.getId());
+        subscription.setNotificator(Subscription.NotificatorEnum.fromValue(document.getNotificator()));
+        subscription.setReceiver(document.getReceiver());
+        subscription.setType(document.getType());
+        subscription.setObjectId(document.getObjectId() != null ? new BigDecimal(document.getObjectId()) : null);
+        return subscription;
     }
 
     private NotificationQueueEntry entryToDto(NotificationEntry entry) {
