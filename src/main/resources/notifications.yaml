@@ -136,9 +136,10 @@ components:
           description: Type of the notification. Message template and configuration for sending the message is determined by this.
           example: "OFFER_CREATED"
         parameters:
-          $ref: "#/components/schemas/NotificationParameteres"
+          $ref: "#/components/schemas/NotificationParameters"
         sendAt:
           type: string
+          format: date-time
           description: An UTC datetime when the message should be send. Be aware that the notification won't be necessarily send at the specified time.
           example: "2020-04-18T22:00:00Z"
 
@@ -157,17 +158,19 @@ components:
         status:
           $ref: "#/components/schemas/NotificationStatus"
         parameters:
-          $ref: "#/components/schemas/NotificationParameteres"
+          $ref: "#/components/schemas/NotificationParameters"
         scheduledAt:
           type: string
+          format: date-time
           description: An UTC datetime at which the notification will be send. Be aware that the notification won't be necessarily send exactly at this time.
           example: "2020-04-18T22:00:00Z"
         sentAt:
           type: string
+          format: date-time
           description: An UTC datetime when the notification was sent. Present only for notifications in SENT state.
           example: "2020-04-18T22:00:00Z"
 
-    NotificationParameteres:
+    NotificationParameters:
       type: object
       description: Object containing parameters for the message template
       example:

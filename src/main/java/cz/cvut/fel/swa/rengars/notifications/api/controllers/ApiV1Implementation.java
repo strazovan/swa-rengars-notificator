@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import static cz.cvut.fel.swa.rengars.notifications.api.DateUtils.*;
-
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class ApiV1Implementation implements V1ApiDelegate {
     public ResponseEntity<List<NotificationQueueEntry>> getNotifications(NotificationStatus state) {
         final List<NotificationEntry> queueState = this.queue.getCurrentQueueState();
         final List<NotificationQueueEntry> entryList = queueState.stream()
-                .filter(entry -> state == null ||  entry.getStatus() == state)
+                .filter(entry -> state == null || entry.getStatus() == state)
                 .map(this::entryToDto)
                 .collect(Collectors.toList());
 
@@ -72,10 +71,11 @@ public class ApiV1Implementation implements V1ApiDelegate {
         final NotificationQueueEntry dto = new NotificationQueueEntry();
         dto.setId(entry.getId());
         dto.setParameters(entry.getParameters());
-        dto.setScheduledAt(toISOString(entry.getScheduledAt()));
+        if (entry.getScheduledAt() != null)
+            dto.setScheduledAt(entry.getScheduledAt().toInstant().atOffset(ZoneOffset.UTC));
         dto.setStatus(entry.getStatus());
         if (entry.getSentAt() != null) {
-            dto.setSentAt(toISOString(entry.getSentAt()));
+            dto.setSentAt(entry.getSentAt().toInstant().atOffset(ZoneOffset.UTC));
         }
         return dto;
     }
@@ -84,7 +84,7 @@ public class ApiV1Implementation implements V1ApiDelegate {
         final var entry = new NotificationEntry();
         entry.setType(dto.getType());
         entry.setParameters((Map<String, Object>) dto.getParameters()); // todo
-        entry.setScheduledAt(dto.getSendAt() != null ? fromISOString(dto.getSendAt()) : new Date());
+        entry.setScheduledAt(dto.getSendAt() != null ? new Date(dto.getSendAt().toInstant().toEpochMilli()) : new Date());
         return entry;
     }
 }
