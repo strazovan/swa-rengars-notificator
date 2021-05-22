@@ -7,6 +7,7 @@ import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationPostEntry;
 import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationQueueEntry;
 import cz.cvut.fel.swa.rengars.notifications.api.model.NotificationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,7 @@ public class ApiV1Implementation implements V1ApiDelegate {
     @Override
     public ResponseEntity<NotificationQueueEntry> createNotification(NotificationPostEntry notificationPostEntry) {
         final NotificationEntry entry = this.queue.queue(this.dtoToEntry(notificationPostEntry));
-        return ResponseEntity.ok(this.entryToDto(entry));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.entryToDto(entry));
     }
 
     @Override

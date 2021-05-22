@@ -5,7 +5,7 @@ info:
 paths:
   /v1/notifications:
     get:
-      tags: ["Notifications"]
+      tags: [ "Notifications" ]
       operationId: getNotifications
       summary: Gets all notifications. By default filters the list to cointain only queued notifications.
       description: Response doesn't contain the parameters.
@@ -27,7 +27,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     post:
-      tags: ["Notifications"]
+      tags: [ "Notifications" ]
       operationId: createNotification
       summary: Creates new notification entry
       requestBody:
@@ -36,7 +36,7 @@ paths:
             schema:
               $ref: "#/components/schemas/NotificationPostEntry"
       responses:
-        "200":
+        "201":
           description: |-
             Notification sucessfuly created.
           content:
@@ -57,7 +57,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /v1/notifications/{id}:
     get:
-      tags: ["Notifications"]
+      tags: [ "Notifications" ]
       operationId: getNotification
       summary: Gets a notification by its id
       parameters:
@@ -78,7 +78,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     delete:
-      tags: ["Notifications"]
+      tags: [ "Notifications" ]
       operationId: cancelNotification
       summary: Cancels notification with given id
       description: Operation is delete because it "deletes" the entry from the queue. The entry is still persisted and retrievable.
@@ -105,6 +105,52 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /v1/subscriptions:
+    post:
+      tags: [ "Subscriptions" ]
+      operationId: subscribe
+      summary: Creates subscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Subscription"
+      responses:
+        "201":
+          description: Subscription created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+        "500":
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags: [ "Subscriptions" ]
+      operationId: unsubscribe
+      summary: Removes the subscription
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Cancelled subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Not found
+        "500":
+          description: General error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 
 components:
   parameters:
@@ -112,7 +158,7 @@ components:
       name: id
       in: path
       required: true
-      description: "Id of the notification"
+      description: "Id of an object"
       schema:
         type: string
       example: "AAAA-BBBB-1233-CDEFG"
@@ -124,6 +170,36 @@ components:
       schema:
         $ref: "#/components/schemas/NotificationStatus"
   schemas:
+    Subscription:
+      title: Subscription
+      type: object
+      required: [ type, notificator ]
+      properties:
+        id:
+          type: string
+          description: Id of the subscription
+          example: 'aaaa-bbbb-ccc-ddd'
+          readOnly: true
+        type:
+          type: string
+          description: Type of the notification to subscribe to.
+          example: "OFFER_CREATED"
+        objectId:
+          type: number
+          description: Specifies id of the associated object id. If not specified, the user will be notified for every object.
+          example: 123
+        receiver:
+          type: string
+          description: Receiver identification. The format depends on the notificator.
+          example: "test@test.com"
+        notificator:
+          type: string
+          description: Which notificator to should the subscription use.
+          example: 'MailNotificator'
+          enum:
+            - MailNotificator
+            - ConsoleNotificator
+
     NotificationPostEntry:
       title: NotificationPostEntry
       type: object
