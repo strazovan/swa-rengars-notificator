@@ -91,7 +91,7 @@ public class ApiV1Implementation implements V1ApiDelegate {
         document.setNotificator(subscription.getNotificator().getValue());
         document.setType(subscription.getType());
         document.setReceiver(subscription.getReceiver());
-        document.setObjectId(subscription.getObjectId().longValue());
+        document.setObjectId(subscription.getObjectId() != null ? subscription.getObjectId().longValue() : null);
         return document;
     }
 
@@ -121,7 +121,7 @@ public class ApiV1Implementation implements V1ApiDelegate {
     private NotificationEntry dtoToEntry(NotificationPostEntry dto) {
         final var entry = new NotificationEntry();
         entry.setType(dto.getType());
-        entry.setObjectId(dto.getObjectId().longValue());
+        entry.setObjectId(dto.getObjectId() != null ? dto.getObjectId().longValue(): null);
         entry.setParameters((Map<String, Object>) dto.getParameters()); // todo
         entry.setScheduledAt(dto.getSendAt() != null ? new Date(dto.getSendAt().toInstant().toEpochMilli()) : new Date());
         return entry;
