@@ -2,7 +2,7 @@
 set -e
 
 mongo <<EOF
-use admin
+use $MONGO_INITDB_DATABASE
 db.createUser({
   user:  '$MONGO_USERNAME',
   pwd: '$MONGO_PASSWORD',

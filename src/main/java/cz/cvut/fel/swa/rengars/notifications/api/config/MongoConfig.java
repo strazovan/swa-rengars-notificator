@@ -37,7 +37,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     public MongoClient mongoClient() {
         final var credentials = !this.mongoUsername.isEmpty() ? (this.mongoUsername + ":" + this.mongoPassword + "@") : "";
         ConnectionString connectionString = new ConnectionString("mongodb://" + credentials +
-                this.mongoHost + ":" + this.mongoPort + "/" + this.mongoDatabase + "?authSource=admin");
+                this.mongoHost + ":" + this.mongoPort + "/" + this.mongoDatabase + "?authSource=" + mongoDatabase);
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
