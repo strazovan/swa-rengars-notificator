@@ -17,6 +17,11 @@ public class SubscriptionsDaoImpl implements SubscriptionsDao {
     private MongoOperations operations;
 
     @Override
+    public SubscriptionDocument findById(String id) {
+        return this.operations.findById(id, SubscriptionDocument.class);
+    }
+
+    @Override
     public List<SubscriptionDocument> findForTypeAndObject(String type, Long objectId) {
         final var query = new Query();
         final Criteria criteria;

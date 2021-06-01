@@ -12,6 +12,17 @@ public class SubscriptionDocument {
     private String receiver;
     private String notificator;
 
+    public SubscriptionDocument() {
+    }
+
+    public SubscriptionDocument(String id, String type, Long objectId, String receiver, String notificator) {
+        this.id = id;
+        this.type = type;
+        this.objectId = objectId;
+        this.receiver = receiver;
+        this.notificator = notificator;
+    }
+
     public String getId() {
         return id;
     }

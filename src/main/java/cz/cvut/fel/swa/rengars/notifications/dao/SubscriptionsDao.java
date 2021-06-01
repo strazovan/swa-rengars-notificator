@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SubscriptionsDao {
+
+    SubscriptionDocument findById(String id);
+
     List<SubscriptionDocument> findForTypeAndObject(String type, Long id);
 
     SubscriptionDocument create(SubscriptionDocument subscription);

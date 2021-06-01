@@ -14,6 +14,17 @@ public class NotificationsConfiguration {
     private Map<String, String> notificatorParameters;
     private String template;
 
+    public NotificationsConfiguration() {
+    }
+
+    public NotificationsConfiguration(String id, String type, String notificatorName, Map<String, String> notificatorParameters, String template) {
+        this.id = id;
+        this.type = type;
+        this.notificatorName = notificatorName;
+        this.notificatorParameters = notificatorParameters;
+        this.template = template;
+    }
+
     public String getId() {
         return id;
     }
