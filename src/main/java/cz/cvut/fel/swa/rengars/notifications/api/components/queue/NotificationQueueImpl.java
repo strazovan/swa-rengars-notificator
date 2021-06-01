@@ -86,7 +86,8 @@ public class NotificationQueueImpl implements NotificationQueue, SmartLifecycle,
                     continue;
                 }
                 try {
-                    final Map<String, NotificationsConfiguration> config = this.configurationDao.findAll().stream().collect(Collectors.toMap(NotificationsConfiguration::getNotificatorName, Function.identity()));
+                    final List<NotificationsConfiguration> byType = configurationDao.findByType(entry.getType());
+                    final Map<String, NotificationsConfiguration> config = byType.stream().collect(Collectors.toMap(NotificationsConfiguration::getNotificatorName, Function.identity()));
                     final List<SubscriptionDocument> subscriptions = this.subscriptionsDao.findForTypeAndObject(entry.getType(), entry.getObjectId());
                     subscriptions.forEach(subscription -> this.notificators.get(subscription.getNotificator()).processEntry(subscription.getReceiver(), config.get(subscription.getNotificator()), notification));
                     notification.setStatus(NotificationStatus.SENT);
