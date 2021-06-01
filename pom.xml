@@ -61,6 +61,17 @@
 			<version>${swagger-annotations-version}</version>
 		</dependency>
 		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openapitools</groupId>
 			<artifactId>jackson-databind-nullable</artifactId>
 			<version>${jackson-databind-nullable}</version>
@@ -154,7 +165,7 @@
 						</goals>
 						<configuration>
 							<inputSpec>
-								${project.basedir}/src/main/resources/notifications.yaml
+								${project.basedir}/src/main/resources/static/notifications.yaml
 							</inputSpec>
 							<generatorName>spring</generatorName>
 							<apiPackage>cz.cvut.fel.swa.rengars.notifications.api.controllers</apiPackage>
