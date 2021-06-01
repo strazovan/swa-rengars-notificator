@@ -19,11 +19,14 @@ public class SubscriptionsDaoImpl implements SubscriptionsDao {
     @Override
     public List<SubscriptionDocument> findForTypeAndObject(String type, Long objectId) {
         final var query = new Query();
-        final var criteria = new Criteria().andOperator(
-                Criteria.where("type").is(type),
-                new Criteria().orOperator(
-                        Criteria.where("objectId").is(null),
-                        Criteria.where("objectId").is(objectId)));
+        final Criteria criteria;
+        if (objectId == null) {
+            criteria = Criteria.where("type").is(type);
+        } else {
+            criteria = new Criteria().andOperator(
+                    Criteria.where("type").is(type),
+                    Criteria.where("objectId").is(objectId));
+        }
         query.addCriteria(criteria);
         return this.operations.find(query, SubscriptionDocument.class);
     }
