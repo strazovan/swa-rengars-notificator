@@ -30,7 +30,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     protected String getDatabaseName() {
-        return "notifications";
+        return this.mongoDatabase;
     }
 
     @Override
