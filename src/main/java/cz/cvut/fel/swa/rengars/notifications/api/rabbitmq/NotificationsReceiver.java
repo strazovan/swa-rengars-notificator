@@ -25,14 +25,15 @@ public class NotificationsReceiver {
     }
 
     @RabbitListener(queues = "#{notificationsQueue.name}")
-    public void receive(String message) throws JsonProcessingException {
-        final var eventDto = this.objectMapper.readValue(message, NotificationEvent.class);
+    public void receive(NotificationEvent eventDto) throws JsonProcessingException {
+        // final var eventDto = this.objectMapper.readValue(message, NotificationEvent.class);
         final NotificationEntry entry = this.entryFromDto(eventDto);
         this.queue.queue(entry);
     }
 
     private NotificationEntry entryFromDto(NotificationEvent event) {
         final var entry = new NotificationEntry();
+        System.out.println("Get notifications " + event.getEventType()); // Work
         entry.setType(event.getEventType());
         entry.setObjectId(event.getId());
         entry.setScheduledAt(new Date());
