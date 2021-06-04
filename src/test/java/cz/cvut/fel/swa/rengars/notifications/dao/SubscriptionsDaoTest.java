@@ -55,7 +55,7 @@ public class SubscriptionsDaoTest extends BaseDaoTestRunner {
         final List<SubscriptionDocument> forTypeAndObject = this.subscriptionsDao.findForTypeAndObject(TestSubscriptions.WITH_ID.getSubscriptionDocument().getType(),
                 TestSubscriptions.WITH_ID.getSubscriptionDocument().getObjectId());
 
-        assertEquals(1L, forTypeAndObject.size());
+        assertEquals(2L, forTypeAndObject.size());
     }
 
     @Test
