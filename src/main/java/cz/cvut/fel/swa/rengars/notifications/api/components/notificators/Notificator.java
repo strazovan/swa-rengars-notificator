@@ -15,7 +15,8 @@ public interface Notificator {
         if (template == null) return ""; // let's just return an empty string and avoid NPE
         var representation = template;
         for (Map.Entry<String, Object> kv : parameters.entrySet()) {
-            representation = representation.replace("${" + kv.getKey() + "}", kv.getValue().toString());
+            if(kv.getValue() != null)
+                representation = representation.replace("${" + kv.getKey() + "}", kv.getValue().toString());
         }
         return representation;
     }
